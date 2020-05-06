@@ -1,0 +1,1 @@
+export default {evt_desc: '', evt_start_date: '', evt_start_time: '', evt_end_date: '', evt_end_time: ''}
