@@ -9,6 +9,7 @@ import LocationMgr from 'nyc-lib/nyc/ol/LocationMgr'
 import Popup from 'nyc-lib/nyc/ol/FeaturePopup'
 import Decorate from 'nyc-lib/nyc/ol/format/Decorate'
 import AutoLoad from 'nyc-lib/nyc/ol/source/AutoLoad'
+import FeatureTip from 'nyc-lib/nyc/ol/FeatureTip'
 import style from './style'
 import schema from './schema'
 
@@ -92,7 +93,7 @@ const editFeature = feature => {
         if (prop.indexOf('date') > -1) {
           const date = $(`#${prop}`).val()
           const time = $(`#${prop.replace(/date/, 'time')}`).val()
-          feature.set(prop, `${date}T${time}`)
+          feature.set(prop, `${date}T${time}Z`)
         } else if (prop === 'evt_desc') {
           feature.set(prop, $(`#${prop}`).val())
         }
@@ -168,6 +169,35 @@ $('.load-json').click(() => {
     reader.readAsText(event.target.files[0])
   })
   input.trigger('click')
+})
+
+const boros = {
+  '1': 'MANHATTAN',
+  '2': 'BRONX',
+  '3': 'BROOKLY',
+  '4': 'QUEENS',
+  '5': 'STATEN ISLAND'
+}
+
+const eventsTip = f => {
+  return {
+    css: 'evt',
+    html: $(`<div><strong>${f.get('evt_desc')}</strong></div>`)
+      .append(`<div class="evt"><em>${f.get('ST_LABEL')}, ${boros[f.get('BOROCODE')]}</em></div>`)
+      .append(`<div class="start">start: ${f.get('evt_start_date')}</div>`)
+      .append(`<div class="start">end: ${f.get('evt_end_date')}</div>`)
+  }
+}
+
+const csclTip = f => {
+  return {
+    html: $(`<div><strong>${f.get('ST_LABEL')}</strong><br><div>${boros[f.get('BOROCODE')]}</div></div>`)
+  }
+}
+
+new FeatureTip({
+  map,
+  tips: [{layer, label: eventsTip}, {layer: csclLayer, label: csclTip}]
 })
 
 global.map = map
