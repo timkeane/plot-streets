@@ -14,10 +14,16 @@ const geocode = new Style({
 })
 
 const cscl = (feature, resolution) => {
+  const end = feature.get('evt_end_date') || '0000'
+  const now = new Date().toISOString().split('T')[0]
   const zoom = nycOl.TILE_GRID.getZForResolution(resolution)
+  let color = feature._added ? 'rgba(0,0,255,.7)' : 'rgba(0,255,0,.7)'
+  if (end < now) {
+    color = 'rgba(255,0,0,.7)'
+  }
   if (zoom > 14) {
     return new Style({
-      stroke: new Stroke({width: 10, color: 'rgba(255,255,0,.1)'})
+      stroke: new Stroke({width: 10, color})
     })
   }
 }
